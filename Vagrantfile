@@ -1,23 +1,42 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Place this Vagrantfile in your src folder and run:
+#
+#     vagrant up
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 # Vagrantfile API/syntax version.
 VAGRANTFILE_API_VERSION = "2"
+
+GO_ARCHIVES = {
+  "linux" => "go1.1.2.linux-amd64.tar.gz",
+  "bsd" => "go1.1.2.freebsd-amd64.tar.gz"
+}
 
 INSTALL = {
   "linux" => "apt-get update -qq; apt-get install -qq -y git mercurial bzr curl",
   "bsd" => "pkg_add -r git mercurial"
 }
 
-GO_ARCHIVES = {
-  "precise64" => "go1.1.2.linux-amd64.tar.gz",
-  "freebsd64" => "go1.1.2.freebsd-amd64.tar.gz"
-}
+# location of the Vagrantfile
+def src_path
+  File.dirname(__FILE__)
+end
 
 # shell script to bootstrap Go
-def bootstrap(os, version)
-  install = INSTALL[os]
-  archive = GO_ARCHIVES[version]
+def bootstrap(box)
+  install = INSTALL[box]
+  archive = GO_ARCHIVES[box]
+
+  profile = <<-PROFILE
+    export GOPATH=$HOME
+    export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+    export CDPATH=.:$GOPATH/src/github.com:$GOPATH/src/code.google.com/p:$GOPATH/src/bitbucket.org:$GOPATH/src/launchpad.net
+  PROFILE
 
   <<-SCRIPT
   #{install}
@@ -27,32 +46,10 @@ def bootstrap(os, version)
   fi
   tar -C /usr/local -xzf #{archive}
 
-  echo 'export GOPATH=$HOME/go' >> /home/vagrant/.profile
-  echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin' >> /home/vagrant/.profile
-  echo 'cd $GOPATH/#{project_path}' >> /home/vagrant/.profile
+  echo '#{profile}' >> /home/vagrant/.profile
 
-  su -l vagrant -c "go get -d -v ./..."
-
-  echo "\nRun: vagrant ssh #{os} -c 'go test ./...'"
+  echo "\nRun: vagrant ssh #{box} -c 'cd project/path; go test ./...'"
   SCRIPT
-end
-
-# partition the path on the last /src/ element
-def partition_path(path_to_project = File.dirname(__FILE__))
-  path_elements = path_to_project.split(File::SEPARATOR)
-  last_src = path_elements.rindex("src")
-  raise "/src/ not found in #{path_to_project}" if last_src.nil?
-  [File.join(path_elements.take(last_src)), File.join(path_elements.drop(last_src))]
-end
-
-# host operating system path to the last /src/
-def src_path
-  partition_path[0]
-end
-
-# path to the project
-def project_path
-  partition_path[1]
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -60,23 +57,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "linux" do |linux|
     linux.vm.box = "precise64"
     linux.vm.box_url = "http://files.vagrantup.com/precise64.box"
-    linux.vm.synced_folder src_path, "/home/vagrant/go"
-    linux.vm.provision :shell, :inline => bootstrap("linux", "precise64")
+    linux.vm.synced_folder src_path, "/home/vagrant/src"
+    linux.vm.provision :shell, :inline => bootstrap("linux")
   end
 
   # Pete Cheslock's BSD box
   # https://gist.github.com/petecheslock/d7394ff93ce783c311c7
   # This box only supports NFS for synced/shared folders:
-  # * which is unsupported on Windows hosts
+  # * which is unsupported on Windows hosts (though maybe with freeNFS)
   # * and requires a private host-only network
   # * and will prompt for the administrator password of the host
+  # * but is said to be faster than VirtualBox shared folders
   config.vm.define "bsd" do |bsd|
     bsd.vm.box = "freebsd64"
     bsd.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-virtualbox-freebsd-9.1.box"
     bsd.vm.synced_folder ".", "/vagrant", :disabled => true
-    bsd.vm.synced_folder src_path, "/home/vagrant/go", :nfs => true
+    bsd.vm.synced_folder src_path, "/home/vagrant/src", :nfs => true
     bsd.vm.network :private_network, :ip => '10.1.10.5'
-    bsd.vm.provision :shell, :inline => bootstrap("bsd", "freebsd64")
+    bsd.vm.provision :shell, :inline => bootstrap("bsd")
   end
 
 end
