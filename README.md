@@ -20,7 +20,7 @@ This will mount your src folder as a shared folder inside the Linux/BSD VMs, whi
 
 Use `vagrant ssh linux` or `vagrant ssh bsd` to login and look around, or run a single command like `vagrant ssh linux -c 'go help'`. 
 
-You will likely need to change directories. CDPATH is configured for the major source code hosts to save a few keystrokes, eg. 
+You will likely need to change directories. [CDPATH][] is configured for the major source code hosts to save a few keystrokes, eg. 
 
 ```bash
 vagrant ssh linux -c 'cd gophertown/looper; go test ./...'
@@ -43,3 +43,4 @@ See the [Vagrant Command Line documentation][cli] for details.
 [cli]: http://docs.vagrantup.com/v2/cli/index.html
 [workspace]: http://golang.org/doc/code.html
 [Vagrantfile]: https://raw.github.com/gophertown/vagrant-gopher/master/Vagrantfile
+[CDPATH]: http://theunixtoolbox.com/cdpath/
