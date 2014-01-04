@@ -12,9 +12,10 @@
 # Vagrantfile API/syntax version.
 VAGRANTFILE_API_VERSION = "2"
 
+# See https://code.google.com/p/go/downloads/list
 GO_ARCHIVES = {
-  "linux" => "go1.1.2.linux-amd64.tar.gz",
-  "bsd" => "go1.1.2.freebsd-amd64.tar.gz"
+  "linux" => "go1.2.linux-amd64.tar.gz",
+  "bsd" => "go1.2.freebsd-amd64.tar.gz"
 }
 
 INSTALL = {
