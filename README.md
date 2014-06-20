@@ -11,7 +11,7 @@ A Vagrantfile for running Go VMs (linux and bsd).
 Copy this [Vagrantfile][] to src/Vagrantfile:
 
 ```bash
-src:~$ curl -O https://raw.github.com/gophertown/vagrant-gopher/master/Vagrantfile
+src:~$ curl -O https://raw.githubusercontent.com/nathany/vagrant-gopher/master/Vagrantfile
 ```
 
 Then run `vagrant up` from any subfolder. 
