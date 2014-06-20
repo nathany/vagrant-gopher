@@ -12,15 +12,17 @@
 # Vagrantfile API/syntax version.
 VAGRANTFILE_API_VERSION = "2"
 
+Vagrant.require_version ">= 1.5.0"
+
 # See https://code.google.com/p/go/downloads/list
 GO_ARCHIVES = {
-  "linux" => "go1.2.linux-amd64.tar.gz",
-  "bsd" => "go1.2.freebsd-amd64.tar.gz"
+  "linux" => "go1.3.linux-amd64.tar.gz",
+  "bsd" => "go1.3.freebsd-amd64.tar.gz"
 }
 
 INSTALL = {
   "linux" => "apt-get update -qq; apt-get install -qq -y git mercurial bzr curl",
-  "bsd" => "pkg_add -r git mercurial"
+  "bsd" => "pkg_add -r git"
 }
 
 # location of the Vagrantfile
@@ -43,7 +45,7 @@ def bootstrap(box)
   #{install}
 
   if ! [ -f /home/vagrant/#{archive} ]; then
-    response=$(curl -O# https://go.googlecode.com/files/#{archive})
+    response=$(curl -O# https://storage.googleapis.com/golang/#{archive})
   fi
   tar -C /usr/local -xzf #{archive}
 
@@ -56,26 +58,23 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "linux" do |linux|
-    linux.vm.box = "precise64"
-    linux.vm.box_url = "http://files.vagrantup.com/precise64.box"
+    linux.vm.box = "ubuntu/trusty64"
     linux.vm.synced_folder src_path, "/home/vagrant/src"
     linux.vm.provision :shell, :inline => bootstrap("linux")
   end
 
-  # Pete Cheslock's BSD box
-  # https://gist.github.com/petecheslock/d7394ff93ce783c311c7
-  # This box only supports NFS for synced/shared folders:
+  # Using NFS for synced/shared folders:
   # * which is unsupported on Windows hosts (though maybe with freeNFS)
   # * and requires a private host-only network
   # * and will prompt for the administrator password of the host
   # * but is said to be faster than VirtualBox shared folders
   config.vm.define "bsd" do |bsd|
-    bsd.vm.box = "freebsd64"
-    bsd.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-virtualbox-freebsd-9.1.box"
+    bsd.vm.box = "chef/freebsd-10.0"
     bsd.vm.synced_folder ".", "/vagrant", :disabled => true
     bsd.vm.synced_folder src_path, "/home/vagrant/src", :nfs => true
     bsd.vm.network :private_network, :ip => '10.1.10.5'
     bsd.vm.provision :shell, :inline => bootstrap("bsd")
+    bsd.ssh.shell = "sh" # for provisioning
   end
 
 end
