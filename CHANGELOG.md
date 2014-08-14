@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1 / 2014-08-13
+
+* Install Go 1.3.1.
+
 ## v0.2.0 / 2014-06-19
 
 * Install Go 1.3.

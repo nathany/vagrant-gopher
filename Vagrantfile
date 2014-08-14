@@ -14,10 +14,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.require_version ">= 1.5.0"
 
-# See https://code.google.com/p/go/downloads/list
+# See http://dl.golang.org/dl/
 GO_ARCHIVES = {
-  "linux" => "go1.3.linux-amd64.tar.gz",
-  "bsd" => "go1.3.freebsd-amd64.tar.gz"
+  "linux" => "go1.3.1.linux-amd64.tar.gz",
+  "bsd" => "go1.3.1.freebsd-amd64.tar.gz"
 }
 
 INSTALL = {

@@ -23,7 +23,7 @@ Use `vagrant ssh linux` or `vagrant ssh bsd` to login and look around, or run a 
 You will likely need to change directories. [CDPATH][] is configured for the major source code hosts to save a few keystrokes, eg. 
 
 ```bash
-vagrant ssh linux -c 'cd gophertown/looper; go test ./...'
+vagrant ssh linux -c 'cd nathany/looper; go test ./...'
 ```
 
 Use `vagrant halt` to shutdown or `vagrant destroy` to free up disk space.
@@ -42,5 +42,5 @@ See the [Vagrant Command Line documentation][cli] for details.
 [VirtualBox]: https://www.virtualbox.org/
 [cli]: http://docs.vagrantup.com/v2/cli/index.html
 [workspace]: http://golang.org/doc/code.html
-[Vagrantfile]: https://raw.github.com/gophertown/vagrant-gopher/master/Vagrantfile
+[Vagrantfile]: https://raw.github.com/nathany/vagrant-gopher/master/Vagrantfile
 [CDPATH]: http://theunixtoolbox.com/cdpath/
