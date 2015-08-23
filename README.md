@@ -1,6 +1,6 @@
 # Vagrant Gopher
 
-A Vagrantfile for running Go VMs (linux and bsd).
+A Vagrantfile for running Go VMs (Linux and BSD). While cross-compilation works great in Go, having actual VMs can be useful to run tests or debug programs under other operating systems.
 
 ### Requirements
 
@@ -38,9 +38,9 @@ See the [Vagrant Command Line documentation][cli] for details.
 * 64-bit boxes are used to support the Go race detector.
 * The BSD box does not support Windows hosts.
 
-[Vagrant]: http://www.vagrantup.com/
+[Vagrant]: https://www.vagrantup.com/
 [VirtualBox]: https://www.virtualbox.org/
-[cli]: http://docs.vagrantup.com/v2/cli/index.html
-[workspace]: http://golang.org/doc/code.html
+[cli]: https://docs.vagrantup.com/v2/cli/index.html
+[workspace]: https://golang.org/doc/code.html
 [Vagrantfile]: https://raw.github.com/nathany/vagrant-gopher/master/Vagrantfile
 [CDPATH]: http://theunixtoolbox.com/cdpath/

@@ -16,12 +16,12 @@ Vagrant.require_version ">= 1.5.0"
 
 # See http://dl.golang.org/dl/
 GO_ARCHIVES = {
-  "linux" => "go1.4.1.linux-amd64.tar.gz",
-  "bsd" => "go1.4.1.freebsd-amd64.tar.gz"
+  "linux" => "go1.5.linux-amd64.tar.gz",
+  "bsd" => "go1.5.freebsd-amd64.tar.gz"
 }
 
 INSTALL = {
-  "linux" => "apt-get update -qq; apt-get install -qq -y git mercurial bzr curl",
+  "linux" => "apt-get update -qq; apt-get install -qq -y git curl",
   "bsd" => "pkg_add -r git"
 }
 
@@ -38,7 +38,7 @@ def bootstrap(box)
   profile = <<-PROFILE
     export GOPATH=$HOME
     export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-    export CDPATH=.:$GOPATH/src/github.com:$GOPATH/src/code.google.com/p:$GOPATH/src/bitbucket.org:$GOPATH/src/launchpad.net
+    export CDPATH=.:$GOPATH/src/github.com:$GOPATH/src/golang.org
   PROFILE
 
   <<-SCRIPT
@@ -58,7 +58,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "linux" do |linux|
-    linux.vm.box = "ubuntu/trusty64"
+    linux.vm.box = "ubuntu/vivid64"
     linux.vm.synced_folder src_path, "/home/vagrant/src"
     linux.vm.provision :shell, :inline => bootstrap("linux")
   end
