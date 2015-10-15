@@ -21,8 +21,8 @@ GO_ARCHIVES = {
 }
 
 INSTALL = {
-  "linux" => "apt-get update -qq; apt-get install -qq -y git curl",
-  "bsd" => "pkg_add -r git"
+  "linux" => "apt-get update -qq; apt-get install -qq -y git",
+  "bsd" => "pkg install -y wget git"
 }
 
 # location of the Vagrantfile
@@ -45,7 +45,7 @@ def bootstrap(box)
   #{install}
 
   if ! [ -f /home/vagrant/#{archive} ]; then
-    response=$(curl -O# https://storage.googleapis.com/golang/#{archive})
+    response=$(wget -nv https://storage.googleapis.com/golang/#{archive})
   fi
   tar -C /usr/local -xzf #{archive}
 
@@ -69,7 +69,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # * and will prompt for the administrator password of the host
   # * but is said to be faster than VirtualBox shared folders
   config.vm.define "bsd" do |bsd|
-    bsd.vm.box = "chef/freebsd-10.0"
+    bsd.vm.box = "bento/freebsd-10.2"
     bsd.vm.synced_folder ".", "/vagrant", :disabled => true
     bsd.vm.synced_folder src_path, "/home/vagrant/src", :nfs => true
     bsd.vm.network :private_network, :ip => '10.1.10.5'
