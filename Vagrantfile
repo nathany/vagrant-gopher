@@ -16,8 +16,8 @@ Vagrant.require_version ">= 1.5.0"
 
 # See http://dl.golang.org/dl/
 GO_ARCHIVES = {
-  "linux" => "go1.6.1.linux-amd64.tar.gz",
-  "bsd" => "go1.6.1.freebsd-amd64.tar.gz"
+  "linux" => "go1.7.linux-amd64.tar.gz",
+  "bsd" => "go1.7.freebsd-amd64.tar.gz"
 }
 
 INSTALL = {
@@ -58,7 +58,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "linux" do |linux|
-    linux.vm.box = "ubuntu/vivid64"
+    linux.vm.box = "ubuntu/trusty64"
     linux.vm.synced_folder src_path, "/home/vagrant/src"
     linux.vm.provision :shell, :inline => bootstrap("linux")
   end
@@ -69,7 +69,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # * and will prompt for the administrator password of the host
   # * but is said to be faster than VirtualBox shared folders
   config.vm.define "bsd" do |bsd|
-    bsd.vm.box = "bento/freebsd-10.2"
+    bsd.vm.box = "bento/freebsd-10.3"
     bsd.vm.synced_folder ".", "/vagrant", :disabled => true
     bsd.vm.synced_folder src_path, "/home/vagrant/src", :nfs => true
     bsd.vm.network :private_network, :ip => '10.1.10.5'
