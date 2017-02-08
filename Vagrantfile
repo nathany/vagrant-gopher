@@ -14,15 +14,19 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.require_version ">= 1.5.0"
 
+GO_VERSION = "1.8"
+
 # See http://dl.golang.org/dl/
 GO_ARCHIVES = {
-  "linux" => "go1.8.linux-amd64.tar.gz",
-  "bsd" => "go1.8.freebsd-amd64.tar.gz"
+  "linux" => "go#{GO_VERSION}.linux-amd64.tar.gz",
+  "bsd" => "go#{GO_VERSION}.freebsd-amd64.tar.gz",
+  "source" => "go#{GO_VERSION}.src.tar.gz"
 }
 
 INSTALL = {
   "linux" => "apt-get update -qq; apt-get install -qq -y git",
-  "bsd" => "pkg install -y wget git"
+  "bsd" => "pkg install -y wget git",
+  "solaris" => "pfexec pkg install build-essential"
 }
 
 # location of the Vagrantfile
@@ -34,6 +38,10 @@ end
 def bootstrap(box)
   install = INSTALL[box]
   archive = GO_ARCHIVES[box]
+  source = GO_ARCHIVES["source"]
+  bootstrap = "go1.4-bootstrap-20161024.tar.gz"
+
+  downloadURL="https://storage.googleapis.com/golang"
 
   profile = <<-PROFILE
     export GOPATH=$HOME
@@ -44,12 +52,28 @@ def bootstrap(box)
   <<-SCRIPT
   #{install}
 
-  if ! [ -f /home/vagrant/#{archive} ]; then
-    response=$(wget -nv https://storage.googleapis.com/golang/#{archive})
-  fi
-  tar -C /usr/local -xzf #{archive}
+  if [ -n "#{archive}" ]; then
+    if ! [ -f /home/vagrant/#{archive} ]; then
+      response=$(wget -nv #{downloadURL}/#{archive})
+    fi
+    tar -C /usr/local -xzf #{archive}
+  else
+    mkdir -p /usr/local/go/bootstrap
+    if ! [ -f #{bootstrap} ]; then
+      wget -nv #{downloadURL}/#{bootstrap}
+    fi
+    tar -C /usr/local/go/bootstrap -xzf #{bootstrap}
+    bash -c "cd /usr/local/go/bootstrap/go/src && ./make.bash"
 
-  echo '#{profile}' >> /home/vagrant/.profile
+    if ! [ -f #{source} ]; then
+      wget -nv #{downloadURL}/#{source}
+    fi
+    tar -C /usr/local -xzf #{source}
+    bash -c "cd /usr/local/go/src && GOROOT_BOOTSTRAP=/usr/local/go/bootstrap/go ./make.bash"
+  fi
+
+  home=~vagrant
+  echo '#{profile}' >> ${home}/.profile
 
   echo "\nRun: vagrant ssh #{box} -c 'cd project/path; go test ./...'"
   SCRIPT
@@ -75,6 +99,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     bsd.vm.network :private_network, :ip => '10.1.10.5'
     bsd.vm.provision :shell, :inline => bootstrap("bsd")
     bsd.ssh.shell = "sh" # for provisioning
+  end
+
+  config.vm.define "solaris" do |solaris|
+    solaris.vm.box = "openindiana/hipster"
+    solaris.vm.synced_folder src_path, "/export/home/vagrant/src"
+    solaris.vm.provision :shell, :inline => bootstrap("solaris")
   end
 
 end
