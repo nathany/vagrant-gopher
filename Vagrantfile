@@ -17,12 +17,14 @@ Vagrant.require_version ">= 1.5.0"
 # See http://dl.golang.org/dl/
 GO_ARCHIVES = {
   "linux" => "go1.8rc3.linux-amd64.tar.gz",
-  "bsd" => "go1.8rc3.freebsd-amd64.tar.gz"
+  "bsd" => "go1.8rc3.freebsd-amd64.tar.gz",
+  "solaris" => ""
 }
 
 INSTALL = {
   "linux" => "apt-get update -qq; apt-get install -qq -y git",
-  "bsd" => "pkg install -y wget git"
+  "bsd" => "pkg install -y wget git",
+  "solaris" => "pfexec pkg install build-essential golang"
 }
 
 # location of the Vagrantfile
@@ -44,12 +46,15 @@ def bootstrap(box)
   <<-SCRIPT
   #{install}
 
-  if ! [ -f /home/vagrant/#{archive} ]; then
-    response=$(wget -nv https://storage.googleapis.com/golang/#{archive})
+  if [ -n "#{archive}" ]; then
+    if ! [ -f /home/vagrant/#{archive} ]; then
+      response=$(wget -nv https://storage.googleapis.com/golang/#{archive})
+    fi
+    tar -C /usr/local -xzf #{archive}
   fi
-  tar -C /usr/local -xzf #{archive}
 
-  echo '#{profile}' >> /home/vagrant/.profile
+  home=~vagrant
+  echo '#{profile}' >> ${home}/.profile
 
   echo "\nRun: vagrant ssh #{box} -c 'cd project/path; go test ./...'"
   SCRIPT
@@ -75,6 +80,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     bsd.vm.network :private_network, :ip => '10.1.10.5'
     bsd.vm.provision :shell, :inline => bootstrap("bsd")
     bsd.ssh.shell = "sh" # for provisioning
+  end
+
+  config.vm.define "solaris" do |solaris|
+    solaris.vm.box = "openindiana/hipster"
+    solaris.vm.synced_folder src_path, "/export/home/vagrant/src"
+    solaris.vm.provision :shell, :inline => bootstrap("solaris")
   end
 
 end
