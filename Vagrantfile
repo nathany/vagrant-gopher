@@ -20,13 +20,13 @@ GO_VERSION = "1.8rc3"
 GO_ARCHIVES = {
   "linux" => "go#{GO_VERSION}.linux-amd64.tar.gz",
   "bsd" => "go#{GO_VERSION}.freebsd-amd64.tar.gz",
-  "solaris" => ""
+  "source" => "go#{GO_VERSION}.src.tar.gz"
 }
 
 INSTALL = {
   "linux" => "apt-get update -qq; apt-get install -qq -y git",
   "bsd" => "pkg install -y wget git",
-  "solaris" => "pfexec pkg install build-essential golang"
+  "solaris" => "pfexec pkg install build-essential"
 }
 
 # location of the Vagrantfile
@@ -38,6 +38,10 @@ end
 def bootstrap(box)
   install = INSTALL[box]
   archive = GO_ARCHIVES[box]
+  source = GO_ARCHIVES["source"]
+  bootstrap = "go1.4-bootstrap-20161024.tar.gz"
+
+  downloadURL="https://storage.googleapis.com/golang"
 
   profile = <<-PROFILE
     export GOPATH=$HOME
@@ -50,9 +54,22 @@ def bootstrap(box)
 
   if [ -n "#{archive}" ]; then
     if ! [ -f /home/vagrant/#{archive} ]; then
-      response=$(wget -nv https://storage.googleapis.com/golang/#{archive})
+      response=$(wget -nv #{downloadURL}/#{archive})
     fi
     tar -C /usr/local -xzf #{archive}
+  else
+    mkdir -p /usr/local/go/bootstrap
+    if ! [ -f #{bootstrap} ]; then
+      wget -nv #{downloadURL}/#{bootstrap}
+    fi
+    tar -C /usr/local/go/bootstrap -xzf #{bootstrap}
+    bash -c "cd /usr/local/go/bootstrap/go/src && ./make.bash"
+
+    if ! [ -f #{source} ]; then
+      wget -nv #{downloadURL}/#{source}
+    fi
+    tar -C /usr/local -xzf #{source}
+    bash -c "cd /usr/local/go/src && GOROOT_BOOTSTRAP=/usr/local/go/bootstrap/go ./make.bash"
   fi
 
   home=~vagrant
