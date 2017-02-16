@@ -14,10 +14,12 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.require_version ">= 1.5.0"
 
+GO_VERSION = "1.8rc3"
+
 # See http://dl.golang.org/dl/
 GO_ARCHIVES = {
-  "linux" => "go1.8rc3.linux-amd64.tar.gz",
-  "bsd" => "go1.8rc3.freebsd-amd64.tar.gz",
+  "linux" => "go#{GO_VERSION}.linux-amd64.tar.gz",
+  "bsd" => "go#{GO_VERSION}.freebsd-amd64.tar.gz",
   "solaris" => ""
 }
 
