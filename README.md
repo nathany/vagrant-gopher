@@ -1,12 +1,12 @@
 # Vagrant Gopher
 
-A Vagrantfile for running Go VMs (Linux and BSD). While cross-compilation works great in Go, having actual VMs can be useful to run tests or debug programs under other operating systems.
+A Vagrantfile for running Go VMs (Linux, BSD and Solaris). While cross-compilation works great in Go, having actual VMs can be useful to run tests or debug programs under other operating systems.
 
 ### Requirements
 
 [Vagrant][], [VirtualBox][] and a [Go workspace][workspace].
 
-On a Mac, you can use[Homebrew Cask](https://caskroom.github.io/) to install:
+On a Mac, you can use [Homebrew Cask](https://caskroom.github.io/) to install:
 
 ```
 brew cask install virtualbox vagrant
@@ -26,7 +26,7 @@ This will mount your `src` folder as a shared folder inside the VMs, while creat
 
 Use `vagrant ssh linux`, `vagrant ssh bsd`, or `vagrant ssh solaris` to login and look around, or run a single command like `vagrant ssh linux -c 'go version'`. 
 
-You will likely need to change directories. [CDPATH][] is configured for the major source code hosts to save a few keystrokes, eg. 
+You will likely need to change directories. [CDPATH][] is configured for GitHub to save a few keystrokes, e.g. 
 
 ```bash
 vagrant ssh linux -c 'cd fsnotify/fsnotify; go test ./...'
