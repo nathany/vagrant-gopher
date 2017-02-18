@@ -6,9 +6,15 @@ A Vagrantfile for running Go VMs (Linux and BSD). While cross-compilation works 
 
 [Vagrant][], [VirtualBox][] and a [Go workspace][workspace].
 
+On a Mac, you can use[Homebrew Cask](https://caskroom.github.io/) to install:
+
+```
+brew cask install virtualbox vagrant
+```
+
 ### Usage
 
-Copy this [Vagrantfile][] to src/Vagrantfile:
+Copy this [Vagrantfile][] to $GOPATH/src/Vagrantfile:
 
 ```bash
 src:~$ curl -O https://raw.githubusercontent.com/nathany/vagrant-gopher/master/Vagrantfile
@@ -16,14 +22,14 @@ src:~$ curl -O https://raw.githubusercontent.com/nathany/vagrant-gopher/master/V
 
 Then run `vagrant up` from any subfolder. 
 
-This will mount your src folder as a shared folder inside the Linux/BSD VMs, while creating new bin/pkg folders to avoid collisions (particularly bin).
+This will mount your `src` folder as a shared folder inside the VMs, while creating new bin/pkg folders to avoid collisions (particularly bin).
 
-Use `vagrant ssh linux` or `vagrant ssh bsd` to login and look around, or run a single command like `vagrant ssh linux -c 'go help'`. 
+Use `vagrant ssh linux`, `vagrant ssh bsd`, or `vagrant ssh solaris` to login and look around, or run a single command like `vagrant ssh linux -c 'go version'`. 
 
 You will likely need to change directories. [CDPATH][] is configured for the major source code hosts to save a few keystrokes, eg. 
 
 ```bash
-vagrant ssh linux -c 'cd nathany/looper; go test ./...'
+vagrant ssh linux -c 'cd fsnotify/fsnotify; go test ./...'
 ```
 
 Use `vagrant halt` to shutdown or `vagrant destroy` to free up disk space.
