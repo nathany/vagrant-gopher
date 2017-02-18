@@ -16,8 +16,8 @@ Vagrant.require_version ">= 1.5.0"
 
 # See http://dl.golang.org/dl/
 GO_ARCHIVES = {
-  "linux" => "go1.8rc3.linux-amd64.tar.gz",
-  "bsd" => "go1.8rc3.freebsd-amd64.tar.gz"
+  "linux" => "go1.8.linux-amd64.tar.gz",
+  "bsd" => "go1.8.freebsd-amd64.tar.gz"
 }
 
 INSTALL = {
