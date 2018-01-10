@@ -14,7 +14,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.require_version ">= 1.5.0"
 
-GO_VERSION = "1.8"
+GO_VERSION = "1.9.2"
 
 def provision_linux
   archive = "go#{GO_VERSION}.linux-amd64.tar.gz"

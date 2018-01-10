@@ -29,7 +29,7 @@ Use `vagrant ssh linux`, `vagrant ssh bsd`, or `vagrant ssh solaris` to login an
 You will likely need to change directories. [CDPATH][] is configured for GitHub to save a few keystrokes, e.g. 
 
 ```bash
-vagrant ssh linux -c 'cd fsnotify/fsnotify; go test ./...'
+vagrant ssh linux -c 'cd fsnotify/fsnotify; go test ./... --race'
 ```
 
 Use `vagrant halt` to shutdown or `vagrant destroy` to free up disk space.
