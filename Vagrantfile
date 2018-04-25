@@ -40,6 +40,18 @@ def provision_bsd
   SCRIPT
 end
 
+def provision_obsd
+  <<-SCRIPT
+  set -x
+  # set -e
+  . /root/.profile
+  /usr/sbin/pkg_add wget bash
+
+  #{install_go_source}
+  #{update_profile}
+  SCRIPT
+end
+
 def provision_solaris
   <<-SCRIPT
   set -x
@@ -124,6 +136,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     bsd.vm.network :private_network, :ip => '10.1.10.5'
     bsd.vm.provision :shell, :inline => provision_bsd
     bsd.ssh.shell = "sh" # for provisioning
+  end
+
+  # Using RSync for synced/shared folders as OpenBSD doesn't support anything
+  # else, but `vagrant rsync` is a one-way mechanisms only. There is a plugin
+  # called rsync-back that might be used to get files back from the guest.
+  # An explicit `vagrant rsync obsd` is required, to update the code in a
+  # running guest (rsync will only be executed automatically on `vagrant up`
+  # and `vagrant reload`).
+  config.vm.define "obsd" do |obsd|
+    obsd.vm.box = "twingly/openbsd-6.2-amd64"
+    obsd.vm.synced_folder ".", "/home/vagrant/src",
+      :type => "rsync", :rsync__exclude => [".git"]
+    obsd.vm.synced_folder ".", "/vagrant", disabled: true
+    obsd.vm.provision :shell, :inline => provision_obsd
+    obsd.ssh.shell = "sh" # for provisioning
   end
 
   config.vm.define "solaris" do |solaris|
