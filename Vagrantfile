@@ -14,7 +14,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.require_version ">= 1.5.0"
 
-GO_VERSION = "1.9.2"
+GO_VERSION = "1.11"
 
 def provision_linux
   archive = "go#{GO_VERSION}.linux-amd64.tar.gz"
@@ -90,7 +90,7 @@ def update_profile
 end
 
 def wget(file)
-  url = "https://storage.googleapis.com/golang"
+  url = "https://dl.google.com/go"
 
   <<-SCRIPT
   if ! [ -f #{file} ]; then
@@ -107,7 +107,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "linux" do |linux|
-    linux.vm.box = "ubuntu/trusty64"
+    linux.vm.box = "ubuntu/bionic64"
     linux.vm.synced_folder src_path, "/home/vagrant/src"
     linux.vm.provision :shell, :inline => provision_linux
   end
@@ -118,10 +118,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # * and will prompt for the administrator password of the host
   # * but is said to be faster than VirtualBox shared folders
   config.vm.define "bsd" do |bsd|
-    bsd.vm.box = "bento/freebsd-10.3"
-    bsd.vm.synced_folder ".", "/vagrant", :disabled => true
-    bsd.vm.synced_folder src_path, "/home/vagrant/src", :nfs => true
-    bsd.vm.network :private_network, :ip => '10.1.10.5'
+    bsd.vm.box = "bento/freebsd-10.4"
+    bsd.vm.synced_folder ".", "/vagrant", disabled: true
+    bsd.vm.synced_folder src_path, "/home/vagrant/src", type: "nfs"
+    bsd.vm.network "private_network", type: "dhcp"
     bsd.vm.provision :shell, :inline => provision_bsd
     bsd.ssh.shell = "sh" # for provisioning
   end
